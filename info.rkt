@@ -13,4 +13,6 @@
 (define implies
   '("irc"))
 (define build-deps
-  '())
+  '("racket-doc"
+    "scribble-lib"
+    "typed-racket-doc"))
