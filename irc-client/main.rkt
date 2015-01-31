@@ -27,6 +27,10 @@
          irc-send!
          irc-recv!)
 
+(require/typed
+ "private/untyped-compat.rkt"
+ [untyped-async-channel-get (Any -> Any)])
+
 (struct IrcConnection ([internal-connection : irc:irc-connection]) #:transparent)
 (struct IrcUser ([nick : String] [username : String] [host : String]) #:transparent)
 
@@ -44,9 +48,10 @@
 (struct IrcMessage-Part IrcMessage ([user : IrcUser] [channel : String] [reason : String]) #:transparent)
 
 (: irc-connect (String Nonnegative-Integer String String String
-                       -> (values IrcConnection (Evtof Semaphore))))
+                       -> (values IrcConnection (Evtof Any))))
 (define (irc-connect server port nick username real-name)
   (let-values ([(connection event) (irc:irc-connect server port nick username real-name)])
+    (assert event evt?)
     (values (IrcConnection connection) event)))
 
 (: irc-join-channel! (IrcConnection String -> Void))
@@ -88,8 +93,9 @@
 
 (: irc-recv! (IrcConnection -> IrcMessage))
 (define (irc-recv! connection)
-  (define message
-    (async-channel-get (irc:irc-connection-incoming (IrcConnection-internal-connection connection))))
+  (define channel (irc:irc-connection-incoming (IrcConnection-internal-connection connection)))
+  (define message (untyped-async-channel-get channel))
+  (assert message irc:irc-message?)
   (when (eof-object? message)
     (error "irc connection closed"))
   (parse-irc-message message))

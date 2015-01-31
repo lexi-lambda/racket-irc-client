@@ -9,8 +9,8 @@
  [#:opaque irc-connection irc-connection?]
  [irc-connect (String Nonnegative-Integer String String String
                       [#:return-eof Any]
-                      -> (values irc-connection (Evtof Semaphore)))]
- [irc-connection-incoming (irc-connection -> (Async-Channelof (U irc-message EOF)))]
+                      -> (values irc-connection Any))]
+ [irc-connection-incoming (irc-connection -> Async-ChannelTop)]
  [irc-join-channel (irc-connection String -> Void)]
  [irc-part-channel (irc-connection String -> Void)]
  [irc-send-message (irc-connection String String -> Void)]
