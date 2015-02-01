@@ -156,6 +156,25 @@ Sent when a @racket[user] joins a @racket[channel] the client is currently conne
 Sent when a @racket[user] leaves a @racket[channel] the client is currently connected to. Also
 includes the provided @racket[reason] for leaving the channel (though it may be empty).}
 
+@defstruct*[(IrcMessage-Quit IrcMessage) ([user IrcUser] [reason String]) #:transparent]{
+Sent when a @racket[user] disconnects from the server. Also includes the provided @racket[reason] for
+leaving (though it may be empty).}
+
+@defstruct*[(IrcMessage-Kick IrcMessage) ([user IrcUser] [channel String] [kicked-user String]
+                                          [reason String])
+            #:transparent]{
+Sent when a the user with @racket[kicked-user] as a nickname is kicked from a @racket[channel] by
+@racket[user]. Also includes the provided @racket[reason] the user was kicked (though it may be
+empty).}
+
+@defstruct*[(IrcMessage-Kill IrcMessage) ([user IrcUser] [killed-user String] [reason String])
+            #:transparent]{
+Sent when a the user with @racket[kicked-user] as a nickname is forcibly disconnected from the server
+by @racket[user]. Also includes the provided @racket[reason] the user was killed.}
+
+@defstruct*[(IrcMessage-Nick IrcMessage) ([user IrcUser] [new-nick String]) #:transparent]{
+Sent when a @racket[user]'s nickname is changed to @racket[new-nick].}
+
 @section{Falling Back to the Low-Level API}
 
 The @racketmodname[irc-client] library does provide tools for interacting with the lower-level
