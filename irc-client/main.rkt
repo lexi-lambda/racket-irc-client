@@ -15,6 +15,10 @@
          (struct-out IrcMessage-Notice)
          (struct-out IrcMessage-Join)
          (struct-out IrcMessage-Part)
+         (struct-out IrcMessage-Quit)
+         (struct-out IrcMessage-Kick)
+         (struct-out IrcMessage-Kill)
+         (struct-out IrcMessage-Nick)
          irc-connect
          irc-join-channel!
          irc-part-channel!
@@ -42,6 +46,10 @@
                                       [content : String]) #:transparent)
 (struct IrcMessage-Join IrcMessage ([user : IrcUser] [channel : String]) #:transparent)
 (struct IrcMessage-Part IrcMessage ([user : IrcUser] [channel : String] [reason : String]) #:transparent)
+(struct IrcMessage-Quit IrcMessage ([user : IrcUser] [reason : String]) #:transparent)
+(struct IrcMessage-Kick IrcMessage ([user : IrcUser] [channel : String] [kicked-user : String] [reason : String]) #:transparent)
+(struct IrcMessage-Kill IrcMessage ([user : IrcUser] [killed-user : String] [reason : String]) #:transparent)
+(struct IrcMessage-Nick IrcMessage ([user : IrcUser] [new-nick : String]) #:transparent)
 
 (: irc-connect (String Nonnegative-Integer String String String
                        -> (values IrcConnection (Evtof Semaphore))))
@@ -105,6 +113,14 @@
      (IrcMessage-Join message user channel)]
     [(irc:irc-message (irc-user-prefix user) "PART" (list channel reason) _)
      (IrcMessage-Part message user channel reason)]
+    [(irc:irc-message (irc-user-prefix user) "QUIT" (list reason) _)
+     (IrcMessage-Quit message user reason)]
+    [(irc:irc-message (irc-user-prefix user) "KICK" (list channel kicked-user reason) _)
+     (IrcMessage-Kick message user channel kicked-user reason)]
+    [(irc:irc-message (irc-user-prefix user) "KILL" (list killed-user reason) _)
+     (IrcMessage-Kill message user killed-user reason)]
+    [(irc:irc-message (irc-user-prefix user) "NICK" (list new-nick) _)
+     (IrcMessage-Nick message user new-nick)]
     [_ (IrcMessage message)]))
 
 ; parses an IRC PRIVMSG to handle CTCP actions
