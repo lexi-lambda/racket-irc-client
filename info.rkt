@@ -8,8 +8,7 @@
   '("base"
     "irc"
     "typed-racket-lib"
-    "typed-racket-more"
-    "unstable-contract-lib"))
+    "typed-racket-more"))
 (define implies
   '("irc"))
 (define build-deps
