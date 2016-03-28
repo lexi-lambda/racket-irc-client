@@ -24,7 +24,7 @@ This library provides a set of constructs for interacting with IRC servers in Ra
 a server, use @racket[irc-connect].
 
 @(racketblock
-  (define (conn ready-evt) (irc-connect "irc.example.com" 6667
+  (define-values (conn ready-evt) (irc-connect "irc.example.com" 6667
                                         "nickname" "username" "Real Name"))
   (sync ready-evt))
 
