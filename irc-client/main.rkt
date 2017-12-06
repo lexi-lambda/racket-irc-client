@@ -29,7 +29,8 @@
          irc-set-user-info!
          irc-quit!
          irc-send!
-         irc-recv!)
+         irc-recv!
+         irc-recv-evt)
 
 (struct IrcConnection ([internal-connection : irc:irc-connection]) #:transparent)
 (struct IrcUser ([nick : String] [username : String] [host : String]) #:transparent)
@@ -94,13 +95,18 @@
 (define (irc-send! connection command . args)
   (apply irc:irc-send-command (IrcConnection-internal-connection connection) command args))
 
+(: irc-recv-evt (IrcConnection -> (Evtof IrcMessage)))
+(define (irc-recv-evt connection)
+  (define (handle message)
+    (if (eof-object? message)
+        (error "irc connection closed")
+        (parse-irc-message (cast message irc:irc-message))))
+  (handle-evt (irc:irc-connection-incoming (IrcConnection-internal-connection connection))
+              handle))
+
 (: irc-recv! (IrcConnection -> IrcMessage))
 (define (irc-recv! connection)
-  (define message
-    (async-channel-get (irc:irc-connection-incoming (IrcConnection-internal-connection connection))))
-  (when (eof-object? message)
-    (error "irc connection closed"))
-  (parse-irc-message message))
+  (sync (irc-recv-evt connection)))
 
 ; parses an irc-message instance to one of the IrcMessage instances
 (define (parse-irc-message [message : irc:irc-message]) : IrcMessage
