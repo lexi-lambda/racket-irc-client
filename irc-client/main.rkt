@@ -97,10 +97,10 @@
 
 (: irc-recv-evt (IrcConnection -> (Evtof IrcMessage)))
 (define (irc-recv-evt connection)
-  (define (handle message)
+  (define (handle [message : (U irc:irc-message EOF)])
     (if (eof-object? message)
         (error "irc connection closed")
-        (parse-irc-message (cast message irc:irc-message))))
+        (parse-irc-message message)))
   (handle-evt (irc:irc-connection-incoming (IrcConnection-internal-connection connection))
               handle))
 
