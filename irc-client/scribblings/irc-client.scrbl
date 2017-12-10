@@ -109,6 +109,12 @@ block until a message arrives.
 
 If the connection is closed, an @racket[exn:fail] will be raised.}
 
+@defproc[(irc-recv-evt [connection IrcConnection]) (Evtof IrcMessage)]{
+Returns a synchronizable event that waits for an incoming message from the connection. The synchronization
+result is the @racket[IrcMessage] recieved.
+
+If the connection is closed, an @racket[exn:fail] will be raised.}
+
 @section{Structure Types}
 
 @defstruct*[IrcConnection ([internal-connection irc:irc-connection?]) #:transparent]{
