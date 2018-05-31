@@ -8,7 +8,8 @@
                         [content : String])]
  [#:opaque irc-connection irc-connection?]
  [irc-connect (String Nonnegative-Integer String String String
-                      [#:return-eof Any]
+                      [#:ssl (U Boolean 'auto 'sslv2-or-v3 'sslv2 'sslv3 'tls 'tls11 'tls12)]
+                      [#:return-eof Boolean]
                       -> (values irc-connection (Evtof Semaphore)))]
  [irc-connection-incoming (irc-connection -> (Async-Channelof (U irc-message EOF)))]
  [irc-join-channel (irc-connection String -> Void)]
